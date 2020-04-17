@@ -39,26 +39,21 @@ function schema2expr(schema: Schema) {
   return thrower('empty')
 }
 
-function $const<T=any>({"const": v}: Partial<iConst<T>>) {
+function $const({"const": v}: Partial<iConst>) {
   if (v === undefined)
     return undefined
 
   return stringify(v)
 }
 
-function $enum<T=any>({"enum": v}: Partial<iEnum<T>>) {
+function $enum({"enum": v}: Partial<iEnum>) {
   if (v === undefined)
     return undefined
   
   return v.map(stringify).join(langOpts.typesJoin)
 }
 
-function $type<T extends string = string>({
-  "type": v, ...schema
-}: Partial<
-  iType<T>
-  & Parameters<typeof typeObject>[0]
->) {
+function $type({"type": v, ...schema}: Partial<iType>) {
   if (v === undefined)
     return undefined
   const arV = Array.isArray(v) ? v : [v]
@@ -116,6 +111,7 @@ function typeObject({properties, required}: Partial<iTypeObject>) {
 
     for (let i = 0; i < length; i++) {
       const key = keys[i]
+      //TODO with `Partial`
       , r = required && required.includes(key) ? '' : '?'
       , k = stringify(key)
       , v = schema2expr(props[key]) 
