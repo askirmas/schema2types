@@ -1,0 +1,35 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "jest.config.json"
+      ],
+      "url": "https://askirmas.github.io/jest.schema.json"
+    },
+    {
+      "fileMatch": [
+        "*.myschema.*json",
+        "*.schema.*json"
+      ],
+      "url": "http://json-schema.org/draft-07/schema"
+    },
+    {
+      "fileMatch": [
+        "*.pnr*.json"
+      ],
+      "url": "./examples/utility-ts/Partial_n_Required/pnr.myschema.json"
+    },
+    {
+      "fileMatch": [
+        "*.partial*.json"
+      ],
+      "url": "./examples/utility-ts/Partial_n_Required/partial.myschema.json"
+    },
+    {
+      "fileMatch": [
+        "*.required*.json"
+      ],
+      "url": "./examples/utility-ts/Partial_n_Required/required.myschema.json"
+    }
+  ]
+}

@@ -2,9 +2,9 @@
   "name": "schema2types",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config jest.config.json"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,12 @@
   },
   "homepage": "https://github.com/askirmas/schema2types#readme",
   "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.1",
+    "ajv": "^6.12.0",
+    "ajv-cli": "^3.1.0",
+    "jest": "^25.3.0",
+    "ts-jest": "^25.4.0",
     "ts-node": "^8.8.2",
     "typescript": "^3.8.3"
   }
