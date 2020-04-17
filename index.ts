@@ -1,12 +1,13 @@
 import Schema, { iConst, iType, iEnum, iTypeObject } from "./def"
-import { thrower, stringify } from "./utils"
+import { thrower, stringify, tsAny } from "./utils"
 
-const langOpts = {
+const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $type] 
+, {length: methodsCount} = keyMethods 
+
+, langOpts = {
   expressionsDelimiter: "\n",
   typesJoin: "|"
 }
-, keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $type] 
-, {length: methodsCount} = keyMethods 
 export default schema2ts
 export {
   schema2ts, Schema,
@@ -24,11 +25,14 @@ function schema2ts(schema: Schema, name: string) {
 
 function schema2expr(schema: Schema) {
   if (schema !== undefined)
-    for (let i = 0; i < methodsCount; i++) {
-      const v = keyMethods[i](schema)
-      if (v !== undefined)
-        return v
-    }
+    if (schema === tsAny)
+      return stringify(tsAny)
+    else
+      for (let i = 0; i < methodsCount; i++) {
+        const v = keyMethods[i](schema)
+        if (v !== undefined)
+          return v
+      }
 
   //TODO or any
   return thrower('empty')
@@ -87,23 +91,40 @@ function $type<T extends string = string>({
   return $return.join(langOpts.typesJoin)
 }
 
-function typeObject({properties}: Partial<iTypeObject>) {
-  if (properties !== undefined) {
-    const keys = Object.keys(properties)
+function typeObject({properties, required}: Partial<iTypeObject>) {
+  const props = !properties && !required
+  ? undefined
+  : !required
+  ? properties
+  : Object.assign(
+    required.reduce(
+      (acc, key) => {
+        if (!properties || !(key in properties))
+          acc[key] = tsAny
+      
+        return acc
+      }
+    , {} as Record<string, typeof tsAny>),
+    properties
+  )
+
+  if (props !== undefined) {
+    const keys = Object.keys(props)
     , {length} = keys
     , $return: string[] = new Array(length)
 
     for (let i = 0; i < length; i++) {
       const key = keys[i]
+      , r = required && required.includes(key) ? '' : '?'
       , k = stringify(key)
-      , v = schema2expr(properties[key]) 
+      , v = schema2expr(props[key]) 
       /* istanbul ignore if */ //TODO `thrower` from option 
       if (
         v === undefined
         || k === undefined
       )
         return undefined
-      $return[i] = `${k}?: ${v}`
+      $return[i] = `${k}${r}: ${v}`
     }
     return $return.join(langOpts.expressionsDelimiter)
   }

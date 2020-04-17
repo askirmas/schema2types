@@ -1,6 +1,10 @@
+const tsAny = {toString: "any"} as const
+
 export {
-  including, thrower, stringify
+  including, thrower, stringify,
+  tsAny
 }
+
 
 function including<T extends Exclude<any, []>>(source: T[]|T, lookup: T) {
   return Array.isArray(source)
@@ -13,5 +17,9 @@ function thrower(message: string) {
 }
 
 function stringify(v: any) {
-  return v === undefined ? undefined : JSON.stringify(v)
+  return v === undefined
+  ? undefined
+  : v === tsAny
+  ? tsAny.toString
+  : JSON.stringify(v)
 }

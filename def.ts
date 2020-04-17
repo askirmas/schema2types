@@ -17,7 +17,7 @@ export type iType<T extends string = string> = {
 
 export type iTypeObject = {
   properties: {[property: string]: Schema}
-  // required
+  required: string[]
   // propertyNames
   // additionalProperties
 }
