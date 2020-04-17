@@ -1,7 +1,7 @@
 import {readFileSync} from 'fs'
 import globby from 'globby'
-import Schema from "./def"
-import { schema2ts } from ".";
+
+import schema2ts, {Schema} from "."
 
 const tsPostfix = '.def.ts'
 , jsPostfix = '.schema2ts.json'
@@ -11,16 +11,20 @@ const tsPostfix = '.def.ts'
 , getDefaultName = (entry: string) => (nameExtractor.exec(entry) ?? [''])[0]
 
 describe(schema2ts.name, () => {
-  describe('falls', () => {
+  describe('falling', () => {
+    it('undefined', () => expect(() => schema2ts(
+      undefined as unknown as Schema,
+      "falling"
+    )).toThrow())
     it('empty', () => expect(() => schema2ts(
       {},
-      "empty"
+      "falling"
     )).toThrow())
-    it('bad', () => expect(() => schema2ts(
-      //@ts-ignore
-      {"type": null},
-      "bad"
-    )).toThrow())    
+
+    it('bad type', () => expect(() => schema2ts(
+      {"type": null as unknown as string},
+      "falling"
+    )).toThrow())
   })
   
   describe('examples', () => {

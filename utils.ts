@@ -13,5 +13,5 @@ function thrower(message: string) {
 }
 
 function stringify(v: any) {
-  return JSON.stringify(v)
+  return v === undefined ? undefined : JSON.stringify(v)
 }

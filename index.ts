@@ -1,4 +1,4 @@
-import Schema, { iConst, iType, iEnum } from "./def"
+import Schema, { iConst, iType, iEnum, iTypeObject } from "./def"
 import { thrower, stringify } from "./utils"
 
 const langOpts = {
@@ -9,7 +9,8 @@ const langOpts = {
 , {length: methodsCount} = keyMethods 
 export default schema2ts
 export {
-  schema2ts
+  schema2ts, Schema,
+  typeObject
 } 
 
 function schema2ts(schema: Schema, name: string) {
@@ -22,12 +23,14 @@ function schema2ts(schema: Schema, name: string) {
 }
 
 function schema2expr(schema: Schema) {
-  for (let i = 0; i < methodsCount; i++) {
-    const v = keyMethods[i](schema)
-    if (v !== undefined)
-      return v
-  }
+  if (schema !== undefined)
+    for (let i = 0; i < methodsCount; i++) {
+      const v = keyMethods[i](schema)
+      if (v !== undefined)
+        return v
+    }
 
+  //TODO or any
   return thrower('empty')
 }
 
@@ -45,13 +48,65 @@ function $enum<T=any>({"enum": v}: Partial<iEnum<T>>) {
   return v.map(stringify).join(langOpts.typesJoin)
 }
 
-function $type<T=string>({"type": v}: Partial<iType<T>>) {
+function $type<T extends string = string>({
+  "type": v, ...schema
+}: Partial<
+  iType<T>
+  & Parameters<typeof typeObject>[0]
+>) {
   if (v === undefined)
     return undefined
+  const arV = Array.isArray(v) ? v : [v]
+  , {length} = arV
+  , $return = new Array(length)
+  for (let i = 0; i < length; i++) {
+    const type = arV[i]
+    let result: string|undefined = undefined
+    switch(type) {
+      case "null": // TODO? maybe with undefined
+      case "boolean":
+      case "number":
+      case "string":
+        result = type
+        break
+      case "integer": 
+        result = 'number'
+        break
+      case "object":
+        result = typeObject(schema)
+        result = result === undefined
+        ? '{}' //or 'object' or 'Object'
+        : `{\n${result}\n}`
+        break
+      default:
+        return undefined
+    }
+    $return[i] = result
+  }  
 
-  return typeof v === 'string'
-  ? v
-  : Array.isArray(v)
-  ? v.join(langOpts.typesJoin)
-  : undefined
+  return $return.join(langOpts.typesJoin)
+}
+
+function typeObject({properties}: Partial<iTypeObject>) {
+  if (properties !== undefined) {
+    const keys = Object.keys(properties)
+    , {length} = keys
+    , $return: string[] = new Array(length)
+
+    for (let i = 0; i < length; i++) {
+      const key = keys[i]
+      , k = stringify(key)
+      , v = schema2expr(properties[key]) 
+      /* istanbul ignore if */ //TODO `thrower` from option 
+      if (
+        v === undefined
+        || k === undefined
+      )
+        return undefined
+      $return[i] = `${k}?: ${v}`
+    }
+    return $return.join(langOpts.expressionsDelimiter)
+  }
+
+  return undefined
 }
