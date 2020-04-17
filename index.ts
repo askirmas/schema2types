@@ -31,7 +31,7 @@ function schema2expr(schema: Schema) {
   if ($t !== undefined)
     return $t
 
-  thrower('empty')
+  return thrower('empty')
 }
 
 function stringify(v: any) {
@@ -45,7 +45,7 @@ function $const<T=any>({"const": v}: Partial<iConst<T>>) {
   return stringify(v)
 }
 
-function $enum<T=any>({"enum": v}: Partial<iEnum>) {
+function $enum<T=any>({"enum": v}: Partial<iEnum<T>>) {
   if (v === undefined)
     return undefined
   

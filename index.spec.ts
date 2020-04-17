@@ -1,5 +1,4 @@
 import {readFileSync} from 'fs'
-import {basename} from 'path'
 import globby from 'globby'
 import Schema from "./def"
 import { schema2ts } from ".";
