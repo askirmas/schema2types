@@ -6,7 +6,8 @@ const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $ty
 
 , langOpts = {
   expressionsDelimiter: "\n",
-  typesJoin: "|"
+  typesJoin: "|",
+  anyObject: "{}" //or 'object' or 'Record<any, any>'
 }
 export default schema2ts
 export {
@@ -79,8 +80,8 @@ function $type<T extends string = string>({
       case "object":
         result = typeObject(schema)
         result = result === undefined
-        ? '{}' //or 'object' or 'Object'
-        : `{\n${result}\n}`
+        ? langOpts.anyObject
+        : result
         break
       default:
         return undefined
@@ -118,7 +119,7 @@ function typeObject({properties, required}: Partial<iTypeObject>) {
       , r = required && required.includes(key) ? '' : '?'
       , k = stringify(key)
       , v = schema2expr(props[key]) 
-      /* istanbul ignore if */ //TODO `thrower` from option 
+      /* istanbul ignore if */ //due to `thrower` //TODO take `thrower` from option 
       if (
         v === undefined
         || k === undefined
@@ -126,7 +127,7 @@ function typeObject({properties, required}: Partial<iTypeObject>) {
         return undefined
       $return[i] = `${k}${r}: ${v}`
     }
-    return $return.join(langOpts.expressionsDelimiter)
+    return `{\n${$return.join(langOpts.expressionsDelimiter)}\n}`
   }
 
   return undefined
