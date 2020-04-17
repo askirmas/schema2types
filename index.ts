@@ -1,11 +1,12 @@
 import Schema, { iConst, iType, iEnum } from "./def"
-import { thrower } from "./utils"
+import { thrower, stringify } from "./utils"
 
 const langOpts = {
   expressionsDelimiter: "\n",
   typesJoin: "|"
 }
-
+, keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $type] 
+, {length: methodsCount} = keyMethods 
 export default schema2ts
 export {
   schema2ts
@@ -21,21 +22,13 @@ function schema2ts(schema: Schema, name: string) {
 }
 
 function schema2expr(schema: Schema) {
-  const $c = $const(schema)
-  if ($c !== undefined)
-    return $c
-  const $e = $enum(schema)
-  if ($e !== undefined)
-    return $e
-  const $t = $type(schema)
-  if ($t !== undefined)
-    return $t
+  for (let i = 0; i < methodsCount; i++) {
+    const v = keyMethods[i](schema)
+    if (v !== undefined)
+      return v
+  }
 
   return thrower('empty')
-}
-
-function stringify(v: any) {
-  return JSON.stringify(v)
 }
 
 function $const<T=any>({"const": v}: Partial<iConst<T>>) {

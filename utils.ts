@@ -1,5 +1,5 @@
 export {
-  including, thrower
+  including, thrower, stringify
 }
 
 function including<T extends Exclude<any, []>>(source: T[]|T, lookup: T) {
@@ -10,4 +10,8 @@ function including<T extends Exclude<any, []>>(source: T[]|T, lookup: T) {
 
 function thrower(message: string) {
   throw new Error(message)
+}
+
+function stringify(v: any) {
+  return JSON.stringify(v)
 }
