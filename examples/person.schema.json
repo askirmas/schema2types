@@ -1,0 +1,32 @@
+{
+  "$ref": "#/definitions/Person",
+  "definitions": {
+    "Person": {
+      "$id": "Person",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["firstName", "lastName", "birthDate"],
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male", "female", "etc"
+          ]
+        }
+      }
+    }
+  }
+}
