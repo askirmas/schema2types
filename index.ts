@@ -1,4 +1,4 @@
-import Schema from "./def"
+import Schema, { iConst, iType, iEnum } from "./def"
 import { thrower } from "./utils"
 
 const langOpts = {
@@ -20,12 +20,45 @@ function schema2ts(schema: Schema, name: string) {
   ].join(langOpts.expressionsDelimiter)
 }
 
-function schema2expr({"const": $c, type}: Schema) {
+function schema2expr(schema: Schema) {
+  const $c = $const(schema)
   if ($c !== undefined)
-    return JSON.stringify($c)
-  return typeof type === 'string'
-  ? type
-  : Array.isArray(type)
-  ? type.join(langOpts.typesJoin)
-  : thrower(`Unknown 'type' shape`)
+    return $c
+  const $e = $enum(schema)
+  if ($e !== undefined)
+    return $e
+  const $t = $type(schema)
+  if ($t !== undefined)
+    return $t
+
+  thrower('empty')
+}
+
+function stringify(v: any) {
+  return JSON.stringify(v)
+}
+
+function $const<T=any>({"const": v}: Partial<iConst<T>>) {
+  if (v === undefined)
+    return undefined
+
+  return stringify(v)
+}
+
+function $enum<T=any>({"enum": v}: Partial<iEnum>) {
+  if (v === undefined)
+    return undefined
+  
+  return v.map(stringify).join(langOpts.typesJoin)
+}
+
+function $type<T=string>({"type": v}: Partial<iType<T>>) {
+  if (v === undefined)
+    return undefined
+
+  return typeof v === 'string'
+  ? v
+  : Array.isArray(v)
+  ? v.join(langOpts.typesJoin)
+  : undefined
 }
