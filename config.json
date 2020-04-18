@@ -1,0 +1,9 @@
+{
+  "expressionsDelimiter": "\n",
+  "kvSeparator": ": ",
+  "optionalTerm": "?",
+  "requiredTerm": "",
+  "typesJoin": "|",
+  "anyObject": "{}",
+  "anyArray": "[]"
+}

@@ -1,18 +1,9 @@
 import Schema, { iConst, iType, iEnum, iTypeObject, iTypeArray } from "./def"
 import { thrower, stringify, tsAny } from "./utils"
+import config from './config.json'
 
 const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $type] 
 , {length: methodsCount} = keyMethods 
-
-, langOpts = {
-  expressionsDelimiter: "\n",
-  kvSeparator: ": ",
-  optionalTerm: "?",
-  requiredTerm: "", // or `!`
-  typesJoin: "|",
-  anyObject: "{}", //or `object` or `Record<string, any>`
-  anyArray: "[]" // or `any[]` or `Array<any>`
-} as const
 , {
   expressionsDelimiter,
   kvSeparator,
@@ -21,7 +12,7 @@ const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $ty
   typesJoin,
   anyObject,
   anyArray,
-} = langOpts
+} = config
  
 export default schema2ts
 export {

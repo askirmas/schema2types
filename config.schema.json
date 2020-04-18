@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "expressionsDelimiter": {
+      "type": "string",
+      "default": "\n"
+    },
+    "kvSeparator": {
+      "type": "string",
+      "default": ": "
+    },
+    "optionalTerm": {
+      "type": "string",
+      "default": "?"
+    },
+    "requiredTerm": {
+      "type": "string",
+      "default": "",
+      "examples": [
+        "!"
+      ]
+    },
+    "typesJoin": {
+      "type": "string",
+      "default": "|"
+    },
+    "anyObject": {
+      "type": "string",
+      "default": "{}", 
+      "examples": [
+        "object", "Record<string, any>"
+      ]
+    },
+    "anyArray": {
+      "type": "string",
+      "default": "[]",
+       "examples": ["any[]", "Array<any>"]
+    }
+  }
+}
