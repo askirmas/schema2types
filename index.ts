@@ -1,4 +1,4 @@
-import { thrower, stringify, tsAny } from "./utils"
+import { thrower, stringify, tsAny, getNameFromRelativeRef } from "./utils"
 import config from './config.json'
 
 import {
@@ -30,7 +30,7 @@ function schema2ts({definitions, ...schema}: TopSchema, name: string) {
   , defs = definitions ? Object.values(definitions) : []
   , {length} = defNames
   , $return: [string, string][] = new Array(length)
- 
+
   let $main: string | void = undefined
   , mainError: string | undefined 
   
@@ -74,19 +74,35 @@ function schema2ts({definitions, ...schema}: TopSchema, name: string) {
   }`
 }
 
-function schema2expr(schema: Schema) {
-  if (schema !== undefined)
-    if (schema === tsAny)
-      return stringify(tsAny)
-    else
-      for (let i = 0; i < methodsCount; i++) {
-        const v = keyMethods[i](schema)
-        if (v !== undefined)
-          return v
-      }
 
-  //TODO or any
-  return thrower('empty')
+function schema2expr(souceSchema: Schema) {
+  if (souceSchema === tsAny)
+    return stringify(tsAny)
+
+  const {$ref, ...schema} = souceSchema
+  , $refName = $ref === undefined
+  ? undefined
+  : getNameFromRelativeRef($ref)
+
+  let mySchema: undefined|string = undefined 
+  for (let i = 0; i < methodsCount; i++) {
+    mySchema = keyMethods[i](schema)
+    if (mySchema !== undefined)
+      break
+  }
+  if (mySchema === undefined && $refName === undefined)
+    //TODO or any
+    return thrower(`empty ${JSON.stringify({$ref, schema})}`)
+
+  return `${
+    $refName ?? ''
+  }${
+    mySchema !== undefined && $refName !== undefined
+    ? ' & '
+    : ''
+  }${
+    mySchema ?? ''
+  }`
 }
 
 function $const({"const": v}: Partial<iConst>) {

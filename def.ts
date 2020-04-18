@@ -1,10 +1,12 @@
-export type TopSchema = Schema & {
-  definitions?: {
+export type TopSchema = Schema & Partial<{
+  definitions: {
     [aliasName: string]: Schema
   }
-}
+}>
 export type Schema = Partial<
-  iConst & iType & iEnum 
+  {
+    $ref: string
+  } & iConst & iType & iEnum 
 >
 
 export type iConst = {

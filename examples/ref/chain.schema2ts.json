@@ -1,0 +1,22 @@
+{
+  "$ref": "#/definitions/def1",
+  "definitions": {
+    "def1": {
+      "type": "object",
+      "$ref": "#/definitions/def0",
+      "properties": {
+        "num": {
+          "type": "number"
+        }
+      }
+    },
+    "def0": {
+      "type": "object",
+      "properties": {
+        "str": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

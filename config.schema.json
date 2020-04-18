@@ -40,6 +40,10 @@
     "anyThing": {
       "type": "string",
       "default": "any"
+    },
+    "nameFromRelRef": {
+      "type": "string",
+      "format": "regexp"
     }
   }
 }

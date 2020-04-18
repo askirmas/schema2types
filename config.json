@@ -6,5 +6,6 @@
   "typesJoin": "|",
   "anyObject": "{}",
   "anyArray": "[]",
-  "anyThing": "any"
+  "anyThing": "any",
+  "nameFromRelRef": "^#/definitions/([^/]+)$"
 }

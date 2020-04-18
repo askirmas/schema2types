@@ -33,6 +33,11 @@ describe(schema2ts.name, () => {
       }},
       "falling"
     )).toThrow())
+
+    it('bad ref', () => expect(() => schema2ts(
+      {"$ref": ""},
+      "falling"
+    )).toThrow())
   })
   
   describe('examples', () => {
@@ -40,8 +45,8 @@ describe(schema2ts.name, () => {
     .forEach(entryJson => {
       const entry = entryJson.replace(/(\.[^.]+)+$/, '')
       if (!entry)
-        throw new Error(`No file title for '${entryJson}'`)
-    
+        throw new Error(`No file title for '${entryJson}'`);
+      
       it(entryJson, () => expect(schema2ts(
         getJson(entry),
         getDefaultName(entry))
