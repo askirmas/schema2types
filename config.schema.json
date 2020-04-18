@@ -36,6 +36,10 @@
       "type": "string",
       "default": "[]",
        "examples": ["any[]", "Array<any>"]
+    },
+    "anyThing": {
+      "type": "string",
+      "default": "any"
     }
   }
 }

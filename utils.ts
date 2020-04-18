@@ -1,4 +1,6 @@
-const tsAny = {toString: "any"} as const
+import {anyThing} from './config.json'
+
+const tsAny = {toString: anyThing} as const
 
 export {
   including, thrower, stringify,
