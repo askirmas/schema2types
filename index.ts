@@ -6,10 +6,23 @@ const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $ty
 
 , langOpts = {
   expressionsDelimiter: "\n",
+  kvSeparator: ": ",
+  optionalTerm: "?",
+  requiredTerm: "", // or `!`
   typesJoin: "|",
   anyObject: "{}", //or `object` or `Record<string, any>`
   anyArray: "[]" // or `any[]` or `Array<any>`
-}
+} as const
+, {
+  expressionsDelimiter,
+  kvSeparator,
+  optionalTerm,
+  requiredTerm,
+  typesJoin,
+  anyObject,
+  anyArray,
+} = langOpts
+ 
 export default schema2ts
 export {
   schema2ts, Schema,
@@ -22,7 +35,7 @@ function schema2ts(schema: Schema, name: string) {
       schema2expr(schema)
     }`,
     `export default ${name}`
-  ].join(langOpts.expressionsDelimiter)
+  ].join(expressionsDelimiter)
 }
 
 function schema2expr(schema: Schema) {
@@ -51,7 +64,7 @@ function $enum({"enum": v}: Partial<iEnum>) {
   if (v === undefined)
     return undefined
   
-  return v.map(stringify).join(langOpts.typesJoin)
+  return v.map(stringify).join(typesJoin)
 }
 
 function $type({"type": v, ...schema}: Partial<iType>) {
@@ -74,10 +87,10 @@ function $type({"type": v, ...schema}: Partial<iType>) {
         result = 'number'
         break
       case "object":
-        result = typeObject(schema) ?? langOpts.anyObject
+        result = typeObject(schema) ?? anyObject
         break
       case "array":
-        result = typeArray(schema) ?? langOpts.anyArray
+        result = typeArray(schema) ?? anyArray
         break
       default:
         return undefined
@@ -85,7 +98,7 @@ function $type({"type": v, ...schema}: Partial<iType>) {
     $return[i] = result
   }  
 
-  return $return.join(langOpts.typesJoin)
+  return $return.join(typesJoin)
 }
 
 function typeObject({properties, required}: Partial<iTypeObject>) {
@@ -113,7 +126,7 @@ function typeObject({properties, required}: Partial<iTypeObject>) {
     for (let i = 0; i < length; i++) {
       const key = keys[i]
       //TODO with `Partial`
-      , r = required && required.includes(key) ? '' : '?'
+      , r = required && required.includes(key) ? requiredTerm : optionalTerm
       , k = stringify(key)
       , v = schema2expr(props[key]) 
       /* istanbul ignore if */ //due to `thrower` //TODO take `thrower` from option 
@@ -122,9 +135,9 @@ function typeObject({properties, required}: Partial<iTypeObject>) {
         || k === undefined
       )
         return undefined
-      $return[i] = `${k}${r}: ${v}`
+      $return[i] = `${k}${r}${kvSeparator}${v}`
     }
-    return `{\n${$return.join(langOpts.expressionsDelimiter)}\n}`
+    return `{\n${$return.join(expressionsDelimiter)}\n}`
   }
 
   return undefined
