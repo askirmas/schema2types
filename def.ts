@@ -1,6 +1,6 @@
 export default Schema
 export type Schema = Partial<
-  iConst & iType & iEnum & iTypeObject
+  iConst & iType & iEnum 
 >
 
 export type iConst = {
@@ -13,11 +13,21 @@ export type iEnum = {
 
 export type iType = {
   type: string[]|string
-} & iTypeObject
+} & iTypeObject & iTypeArray
 
 export type iTypeObject = {
   properties: {[property: string]: Schema}
   required: string[]
-  // propertyNames
-  // additionalProperties
+  //TODO propertyNames
+  //TODO additionalProperties
+  //TODO minProperties
+  //TODO maxProperties
+  //TODO patternProperties
+}
+
+export type iTypeArray = {
+  items: Schema //TODO Schema[]
+  //TODO additionalItems
+  //TODO minItems
+  //TODO maxItems
 }

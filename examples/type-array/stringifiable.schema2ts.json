@@ -1,0 +1,11 @@
+{
+  "type": "array",
+  "items": {
+    "type": ["string", "object"],
+    "properties": {
+      "toString": {
+        "type": "string"
+      }
+    }
+  }
+}

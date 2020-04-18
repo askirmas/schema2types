@@ -1,4 +1,4 @@
-import Schema, { iConst, iType, iEnum, iTypeObject } from "./def"
+import Schema, { iConst, iType, iEnum, iTypeObject, iTypeArray } from "./def"
 import { thrower, stringify, tsAny } from "./utils"
 
 const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $type] 
@@ -7,7 +7,8 @@ const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $ty
 , langOpts = {
   expressionsDelimiter: "\n",
   typesJoin: "|",
-  anyObject: "{}" //or 'object' or 'Record<any, any>'
+  anyObject: "{}", //or `object` or `Record<string, any>`
+  anyArray: "[]" // or `any[]` or `Array<any>`
 }
 export default schema2ts
 export {
@@ -73,10 +74,10 @@ function $type({"type": v, ...schema}: Partial<iType>) {
         result = 'number'
         break
       case "object":
-        result = typeObject(schema)
-        result = result === undefined
-        ? langOpts.anyObject
-        : result
+        result = typeObject(schema) ?? langOpts.anyObject
+        break
+      case "array":
+        result = typeArray(schema) ?? langOpts.anyArray
         break
       default:
         return undefined
@@ -126,5 +127,19 @@ function typeObject({properties, required}: Partial<iTypeObject>) {
     return `{\n${$return.join(langOpts.expressionsDelimiter)}\n}`
   }
 
+  return undefined
+}
+
+function typeArray({items}: Partial<iTypeArray>) {
+  if (items !== undefined) {
+    //TODO items: Schema[]
+    // if (Array.isArray(items))
+    //   return undefined
+    const v = schema2expr(items)
+    /* istanbul ignore if */ //due to `thrower`
+    if (v === undefined)
+      return undefined
+    return `(${v})[]` 
+  }
   return undefined
 }
