@@ -1,0 +1,8 @@
+{
+  "type": "number",
+  "definitions": {
+    "def1": {
+      "type": "string"
+    }
+  }
+}

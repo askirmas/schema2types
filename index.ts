@@ -1,6 +1,11 @@
-import Schema, { iConst, iType, iEnum, iTypeObject, iTypeArray } from "./def"
 import { thrower, stringify, tsAny } from "./utils"
 import config from './config.json'
+
+import {
+  TopSchema, Schema,
+  iConst, iType, iEnum,
+  iTypeObject, iTypeArray
+} from "./def"
 
 const keyMethods: ((schema: Schema) => string|undefined)[] = [$const, $enum, $type] 
 , {length: methodsCount} = keyMethods 
@@ -20,13 +25,53 @@ export {
   typeObject
 } 
 
-function schema2ts(schema: Schema, name: string) {
-  return [
-    `export type ${name} = ${
-      schema2expr(schema)
-    }`,
-    `export default ${name}`
-  ].join(expressionsDelimiter)
+function schema2ts({definitions, ...schema}: TopSchema, name: string) {
+  const defNames = definitions ? Object.keys(definitions) : []
+  , defs = definitions ? Object.values(definitions) : []
+  , {length} = defNames
+  , $return: [string, string][] = new Array(length)
+ 
+  let $main: string | void = undefined
+  , mainError: string | undefined 
+  
+  try {
+    $main = schema2expr(schema)
+    /* istanbul ignore if */
+    if ($main === undefined)
+      throw new Error('main empty')
+  } catch(e) {
+    mainError = e
+  }
+
+  for (let i = 0; i < length; i++) {
+    const name = defNames[i]
+    , expr = schema2expr(defs[i])
+    /* istanbul ignore if */
+    if (expr === undefined)
+      return thrower(`Empty '${name}'`)
+    $return[i] = [name, expr]
+  }
+
+  if (length === 0 && mainError !== undefined)
+    return thrower(mainError)
+
+  return `${
+    mainError !== undefined
+    ? ''
+    :
+    [
+      `export type ${name} = ${$main}`,
+      `export default ${name}`
+    ].join(expressionsDelimiter)
+  }${
+    length === 0 || mainError !== undefined
+    ? '' 
+    : expressionsDelimiter
+  }${
+    $return
+    .map(([name, expr]) => `export type ${name} = ${expr}`)
+  .join(expressionsDelimiter)
+  }`
 }
 
 function schema2expr(schema: Schema) {

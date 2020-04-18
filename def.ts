@@ -1,4 +1,8 @@
-export default Schema
+export type TopSchema = Schema & {
+  definitions?: {
+    [aliasName: string]: Schema
+  }
+}
 export type Schema = Partial<
   iConst & iType & iEnum 
 >

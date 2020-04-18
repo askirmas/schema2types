@@ -1,0 +1,1 @@
+export type def1 = string

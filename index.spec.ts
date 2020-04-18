@@ -16,6 +16,7 @@ describe(schema2ts.name, () => {
       undefined as unknown as Schema,
       "falling"
     )).toThrow())
+    
     it('empty', () => expect(() => schema2ts(
       {},
       "falling"
@@ -23,6 +24,13 @@ describe(schema2ts.name, () => {
 
     it('bad type', () => expect(() => schema2ts(
       {"type": null as unknown as string},
+      "falling"
+    )).toThrow())
+
+    it('bad definition', () => expect(() => schema2ts(
+      {"definitions": {
+        "falling": undefined as unknown as Schema
+      }},
       "falling"
     )).toThrow())
   })
