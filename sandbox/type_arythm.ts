@@ -1,3 +1,7 @@
+export {
+  allOf
+}
+
 type tAB = {
   a: number
   b: string
